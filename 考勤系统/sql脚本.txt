@@ -1,0 +1,149 @@
+/*==============================================================*/
+/* DBMS name:      MySQL 5.0                                    */
+/* Created on:     2017/10/31 9:10:15                           */
+/*==============================================================*/
+
+
+drop table if exists tb_attOrganization;
+
+drop table if exists tb_attSignInfo;
+
+drop table if exists tb_cheAttendance;
+
+drop table if exists tb_dictionaryCategory;
+
+drop table if exists tb_dictionaryData;
+
+drop table if exists tb_orgAttendance;
+
+drop table if exists tb_orgMembers;
+
+drop table if exists tb_userAccount;
+
+/*==============================================================*/
+/* Table: tb_attOrganization                                    */
+/*==============================================================*/
+create table tb_attOrganization
+(
+   organization_id      int not null,
+   organization_userId  int not null,
+   organization_name    varchar(255) not null,
+   organization_qrCodev varchar(255) not null,
+   organization_qrDays  int not null,
+   primary key (organization_id)
+);
+
+/*==============================================================*/
+/* Table: tb_attSignInfo                                        */
+/*==============================================================*/
+create table tb_attSignInfo
+(
+   attSignInfo_id       int not null,
+   attSignInfo_attId    int not null,
+   attSignInfo_userId   int not null,
+   attSignInfo_time     datetime,
+   attSignInfo_status   int not null,
+   primary key (attSignInfo_id)
+);
+
+/*==============================================================*/
+/* Table: tb_cheAttendance                                      */
+/*==============================================================*/
+create table tb_cheAttendance
+(
+   attendance_id        int not null,
+   attendance_title     varchar(255) not null,
+   attendance_startTime datetime not null,
+   attendance_endTime   datetime not null,
+   attendance_locale    varchar(255) not null,
+   attendance_org       int not null,
+   attendance_peoNumber int not null,
+   attendance_qrCode    varchar(255) not null,
+   attendance_qrUpdatetime int not null,
+   primary key (attendance_id)
+);
+
+/*==============================================================*/
+/* Table: tb_dictionaryCategory                                 */
+/*==============================================================*/
+create table tb_dictionaryCategory
+(
+   dictionaryCategory_id int not null,
+   dictionaryCategory_number int not null,
+   dictionaryCategory_name varchar(50) not null,
+   primary key (dictionaryCategory_id)
+);
+
+/*==============================================================*/
+/* Table: tb_dictionaryData                                     */
+/*==============================================================*/
+create table tb_dictionaryData
+(
+   dictionaryData_id    int not null,
+   dictionaryData_categoryNumber int not null,
+   dictionaryData_dataNumber int not null,
+   dictionaryData_value varchar(50) not null,
+   dictionaryData_describe varchar(255),
+   primary key (dictionaryData_id)
+);
+
+/*==============================================================*/
+/* Table: tb_orgAttendance                                      */
+/*==============================================================*/
+create table tb_orgAttendance
+(
+   orgAttentance_id     int not null,
+   orgAttentance_attId  int not null,
+   orgAttentance_orgId  int not null,
+   primary key (orgAttentance_id)
+);
+
+/*==============================================================*/
+/* Table: tb_orgMembers                                         */
+/*==============================================================*/
+create table tb_orgMembers
+(
+   menbers_id           int not null,
+   menbers_userId       int not null,
+   menbers_orgId        int not null,
+   primary key (menbers_id)
+);
+
+/*==============================================================*/
+/* Table: tb_userAccount                                        */
+/*==============================================================*/
+create table tb_userAccount
+(
+   user_id              int not null,
+   user_email           varchar(50) not null,
+   user_phone           varchar(50) not null,
+   user_username        varchar(50) not null,
+   user_password        varchar(50) not null,
+   user_role            int not null,
+   primary key (user_id)
+);
+
+alter table tb_attOrganization add constraint FK_att_user foreign key (organization_userId)
+      references tb_userAccount (user_id) on delete restrict on update restrict;
+
+alter table tb_attSignInfo add constraint FK_Reference_7 foreign key (attSignInfo_attId)
+      references tb_cheAttendance (attendance_id) on delete restrict on update restrict;
+
+alter table tb_attSignInfo add constraint FK_Reference_8 foreign key (attSignInfo_userId)
+      references tb_userAccount (user_id) on delete restrict on update restrict;
+
+alter table tb_cheAttendance add constraint FK_che_att foreign key (attendance_org)
+      references tb_attOrganization (organization_id) on delete restrict on update restrict;
+
+alter table tb_orgAttendance add constraint FK_Reference_6 foreign key (orgAttentance_orgId)
+      references tb_attOrganization (organization_id) on delete restrict on update restrict;
+
+alter table tb_orgAttendance add constraint FK_a foreign key (orgAttentance_attId)
+      references tb_cheAttendance (attendance_id) on delete restrict on update restrict;
+
+alter table tb_orgMembers add constraint FK_men_org foreign key (menbers_orgId)
+      references tb_attOrganization (organization_id) on delete restrict on update restrict;
+
+alter table tb_orgMembers add constraint FK_men_user foreign key (menbers_userId)
+      references tb_userAccount (user_id) on delete restrict on update restrict;
+
